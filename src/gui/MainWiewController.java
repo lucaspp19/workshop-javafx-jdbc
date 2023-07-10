@@ -3,6 +3,7 @@ package gui;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 import application.Main;
 import gui.util.Alerts;
@@ -38,14 +39,18 @@ public class MainWiewController implements Initializable {
 	@FXML
 	public void OnMenuItemDepartmentAction() {
 
-		loadView2("/gui/Department.fxml");
+		loadView("/gui/Department.fxml", (DepartmentListController controller) -> {
+			controller.setDepartmentService(new DepartmentService());
+			controller.updateTableView();
+		});
 
 	}
 
 	@FXML
 	public void OnMenuItemAboutAction() {
 
-		loadView("/gui/About.fxml");
+		loadView("/gui/About.fxml", X -> {
+		});
 
 	}
 
@@ -54,55 +59,29 @@ public class MainWiewController implements Initializable {
 
 	}
 
-	private synchronized void loadView(String absoluteName) {
+	private synchronized <T> void loadView(String absoluteName, Consumer<T> initializingAction) {
 
 		try {
-			
+
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
 			VBox newBox = loader.load();
 
 			Scene mainScene = Main.getMainScene();
 			VBox mainBox = (VBox) ((ScrollPane) mainScene.getRoot()).getContent();
-			
+
 			Node mainMenu = mainBox.getChildren().get(0);
 			mainBox.getChildren().clear();
 			mainBox.getChildren().add(mainMenu);
 			mainBox.getChildren().addAll(newBox.getChildren());
-			
+
+			T controller = loader.getController();
+			initializingAction.accept(controller);
 
 		} catch (IOException e) {
 
 			Alerts.showAlert("IO Exception", "Error loading view", e.getMessage(), AlertType.ERROR);
 		}
 
-	}
-	
-	private synchronized void loadView2(String absoluteName) {
-		
-		try {
-			
-			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
-			VBox newBox = loader.load();
-			
-			Scene mainScene = Main.getMainScene();
-			VBox mainBox = (VBox) ((ScrollPane) mainScene.getRoot()).getContent();
-			
-			Node mainMenu = mainBox.getChildren().get(0);
-			mainBox.getChildren().clear();
-			mainBox.getChildren().add(mainMenu);
-			mainBox.getChildren().addAll(newBox.getChildren());
-			
-			DepartmentListController controller = loader.getController();
-			controller.setDepartmentService(new DepartmentService());
-			controller.updateTableView();
-			
-			
-			
-		} catch (IOException e) {
-			
-			Alerts.showAlert("IO Exception", "Error loading view", e.getMessage(), AlertType.ERROR);
-		}
-		
 	}
 
 }
