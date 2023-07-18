@@ -80,7 +80,7 @@ public class DepartmentFormController implements Initializable {
 			entity = getFormData();
 			service.saveOrUpadte(entity);
 			notifyDataChangeListeners();
-			Utils.currentSatge(event).close();
+			Utils.currentStage(event).close();
 
 		} catch (ValidationExcepetion e) {
 			
@@ -135,7 +135,7 @@ public class DepartmentFormController implements Initializable {
 	@FXML
 	public void onBtCancelAction(ActionEvent event) {
 
-		Utils.currentSatge(event).close();
+		Utils.currentStage(event).close();
 
 	}
 
